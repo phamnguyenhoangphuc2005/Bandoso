@@ -1,5 +1,6 @@
 import L from "leaflet";
 import type { Category } from "../../types/location";
+import { asset } from "../../utils/asset";
 
 const ICONS: Record<string, string> = {
   landmark: "⛩",
@@ -14,10 +15,11 @@ const ICONS: Record<string, string> = {
 export function createCategoryIcon(category: Category | undefined, imageUrl?: string): L.DivIcon {
   const color = category?.color ?? "#26658C";
   const symbol = ICONS[category?.icon ?? ""] ?? "●";
-  const hasImage = Boolean(imageUrl);
+  const resolvedImage = imageUrl ? asset(imageUrl) : undefined;
+  const hasImage = Boolean(resolvedImage);
 
   const headStyle = hasImage
-    ? `background-color:${color}; background-image:url('${imageUrl}');`
+    ? `background-color:${color}; background-image:url('${resolvedImage}');`
     : `background-color:${color};`;
 
   return L.divIcon({

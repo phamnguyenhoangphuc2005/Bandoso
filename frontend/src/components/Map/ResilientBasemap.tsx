@@ -1,102 +1,126 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { useMap } from "react-leaflet";
 
+export type BasemapMode = "street" | "satellite";
+
+type Provider = { url: string; options: L.TileLayerOptions };
+
 /**
- * Danh sách các nguồn tile nền, xếp theo thứ tự ưu tiên.
+ * Các nguồn tile nền, xếp theo thứ tự ưu tiên — TẤT CẢ đều không cần API key.
  *
- * Trước đây trang chỉ gọi thẳng vào `tile.openstreetmap.org` — đây là máy chủ
- * demo miễn phí của cộng đồng OpenStreetMap, KHÔNG dành cho sản phẩm chạy
- * thật: nó áp dụng chính sách chống lạm dụng khá gắt (chặn theo Referer /
- * User-Agent, giới hạn số lượng request), nên rất dễ bị từ chối âm thầm khi
- * chạy trong môi trường nhúng/sandbox (ví dụ khung xem trước) hoặc khi có
- * nhiều người dùng thật truy cập cùng lúc — tile không tải được, nhưng vì
- * trình duyệt liên tục thử tải lại các ô tile khi lướt/zoom nên cảm giác là
- * "giật, lag", dù bản thân bản đồ (vector: ranh giới, marker...) vẫn chạy
- * mượt bình thường.
- *
- * Giải pháp: dùng CARTO Voyager (rastertiles) làm nguồn chính — đây là CDN
- * tile miễn phí, không cần API key, được nhiều sản phẩm thật sử dụng, ổn
- * định hơn nhiều so với tile.openstreetmap.org. Nếu vì lý do nào đó (mạng,
- * tường lửa, quá tải...) nguồn chính vẫn lỗi liên tục, component sẽ TỰ ĐỘNG
- * chuyển sang nguồn dự phòng kế tiếp mà không cần người dùng làm gì.
+ * LƯU Ý QUAN TRỌNG: CARTO (basemaps.cartocdn.com) trước đây được dùng làm nguồn
+ * chính nhưng hiện đã YÊU CẦU API KEY. Khi thiếu key, máy chủ vẫn trả về HTTP 200
+ * kèm ảnh chữ "API KEY REQUIRED" => Leaflet coi là tải thành công, không phát
+ * sinh `tileerror` nên cơ chế tự chuyển nguồn dự phòng không bao giờ kích hoạt.
+ * Vì vậy đã loại bỏ hoàn toàn CARTO.
  */
-export const BASEMAP_PROVIDERS: { url: string; options: L.TileLayerOptions }[] = [
-  {
-    // CARTO Voyager — CDN tile miễn phí, không cần API key, ổn định cho sản phẩm thật.
-    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    options: {
-      subdomains: "abcd",
-      maxZoom: 20,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+const referrerPolicy = "strict-origin-when-cross-origin" as const;
+
+const BASEMAP_PROVIDERS: Record<BasemapMode, Provider[]> = {
+  street: [
+    {
+      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      options: {
+        subdomains: "abc",
+        maxZoom: 19,
+        referrerPolicy,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      },
     },
-  },
-  {
-    // Dự phòng 1: máy chủ tile chính thức của OpenStreetMap.
-    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    options: {
-      subdomains: "abc",
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    {
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      options: {
+        maxZoom: 19,
+        referrerPolicy,
+        attribution: "Tiles &copy; Esri — Source: Esri, HERE, Garmin, FAO, NOAA, USGS",
+      },
     },
-  },
-  {
-    // Dự phòng 2: nền Esri World Street Map (miễn phí, không cần API key).
-    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-    options: {
-      maxZoom: 19,
-      attribution: "Tiles &copy; Esri — Source: Esri, HERE, Garmin, FAO, NOAA, USGS",
+    {
+      url: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",
+      options: {
+        subdomains: "abc",
+        maxZoom: 20,
+        referrerPolicy,
+        attribution: '&copy; <a href="https://www.openstreetmap.fr">OpenStreetMap France</a> &amp; contributors',
+      },
     },
-  },
-];
+  ],
+  satellite: [
+    {
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      options: {
+        maxZoom: 19,
+        referrerPolicy,
+        attribution: "Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+      },
+    },
+  ],
+};
 
 const MAX_ERRORS_BEFORE_SWITCH = 6;
 
+interface Props {
+  mode?: BasemapMode;
+  onAllProvidersFailed?: () => void;
+  onRecovered?: () => void;
+}
+
 /**
- * Lớp nền bản đồ (thay cho <TileLayer> tĩnh): tự dò lỗi và chuyển nguồn tile
- * dự phòng nếu nguồn hiện tại lỗi quá nhiều lần liên tiếp.
+ * Lớp nền bản đồ có khả năng tự chuyển nguồn dự phòng khi tile lỗi liên tục.
  *
- * @param onAllProvidersFailed Gọi khi TẤT CẢ nguồn tile đều đã thử và vẫn lỗi
- * liên tục (ví dụ thiết bị mất mạng hoàn toàn) — dùng để hiển thị cảnh báo
- * cho người dùng thay vì để bản đồ trắng trơn không rõ lý do.
+ * Các callback được giữ qua ref nên việc component cha re-render (gõ tìm kiếm,
+ * đổi bộ lọc...) KHÔNG làm gỡ/dựng lại lớp tile (nguyên nhân gây nháy/lag trước đây).
  */
-export function ResilientBasemap({ onAllProvidersFailed }: { onAllProvidersFailed?: () => void }) {
+export function ResilientBasemap({ mode = "street", onAllProvidersFailed, onRecovered }: Props) {
   const map = useMap();
+  const failedRef = useRef(onAllProvidersFailed);
+  const recoveredRef = useRef(onRecovered);
+  useEffect(() => {
+    failedRef.current = onAllProvidersFailed;
+    recoveredRef.current = onRecovered;
+  }, [onAllProvidersFailed, onRecovered]);
 
   useEffect(() => {
+    const providers = BASEMAP_PROVIDERS[mode];
     let providerIndex = 0;
     let errorCount = 0;
+    let reportedFailure = false;
     let currentLayer: L.TileLayer | null = null;
     let cancelled = false;
 
     function mountProvider(index: number) {
       if (cancelled) return;
-      const provider = BASEMAP_PROVIDERS[index];
+      const provider = providers[index];
       const layer = L.tileLayer(provider.url, provider.options);
 
       layer.on("tileerror", () => {
+        if (cancelled || layer !== currentLayer) return;
         errorCount += 1;
         if (errorCount >= MAX_ERRORS_BEFORE_SWITCH) {
-          if (providerIndex < BASEMAP_PROVIDERS.length - 1) {
+          if (providerIndex < providers.length - 1) {
             const failedLayer = currentLayer;
             providerIndex += 1;
             errorCount = 0;
             mountProvider(providerIndex);
             if (failedLayer) map.removeLayer(failedLayer);
-          } else {
-            onAllProvidersFailed?.();
+          } else if (!reportedFailure) {
+            reportedFailure = true;
+            failedRef.current?.();
           }
         }
       });
 
-      // Reset bộ đếm lỗi khi tile tải thành công, để những lỗi lẻ tẻ
-      // (do mất mạng thoáng qua) không vô tình kích hoạt chuyển nguồn.
       layer.on("tileload", () => {
         errorCount = 0;
+        if (reportedFailure) {
+          reportedFailure = false;
+          recoveredRef.current?.();
+        }
       });
 
       layer.addTo(map);
+      layer.bringToBack();
       currentLayer = layer;
     }
 
@@ -106,7 +130,7 @@ export function ResilientBasemap({ onAllProvidersFailed }: { onAllProvidersFaile
       cancelled = true;
       if (currentLayer) map.removeLayer(currentLayer);
     };
-  }, [map, onAllProvidersFailed]);
+  }, [map, mode]);
 
   return null;
 }

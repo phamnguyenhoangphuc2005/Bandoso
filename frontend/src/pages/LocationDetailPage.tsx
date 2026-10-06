@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MapContainer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { api } from "../services/api";
+import { api, API_ENABLED } from "../services/api";
+import { asset } from "../utils/asset";
 import type { Category, Location } from "../types/location";
 import { createCategoryIcon } from "../components/Marker/CategoryMarker";
 import { ResilientBasemap } from "../components/Map/ResilientBasemap";
@@ -17,21 +18,38 @@ export function LocationDetailPage() {
   const navigate = useNavigate();
   const [location, setLocation] = useState<Location | null>(null);
   const [category, setCategory] = useState<Category | undefined>(undefined);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     if (!id) return;
-    api
-      .getLocationById(id)
-      .then(async (loc) => {
-        setLocation(loc);
-        const cats = await api.getCategories();
-        setCategory(cats.find((c) => c.id === loc.categoryId));
-      })
-      .catch(() => {
-        const loc = (fallbackLocations as Location[]).find((l) => l.id === id) ?? null;
-        setLocation(loc);
-        setCategory((fallbackCategories as Category[]).find((c) => c.id === loc?.categoryId));
-      });
+    let alive = true;
+
+    const loadStatic = () => {
+      const loc = (fallbackLocations as Location[]).find((l) => l.id === id) ?? null;
+      if (!alive) return;
+      setLocation(loc);
+      setCategory((fallbackCategories as Category[]).find((c) => c.id === loc?.categoryId));
+      if (!loc) setNotFound(true);
+    };
+
+    if (!API_ENABLED) {
+      loadStatic();
+    } else {
+      api
+        .getLocationById(id)
+        .then(async (loc) => {
+          const cats = await api.getCategories();
+          if (!alive) return;
+          setLocation(loc);
+          setCategory(cats.find((c) => c.id === loc.categoryId));
+        })
+        .catch(loadStatic);
+    }
+
+    window.scrollTo(0, 0);
+    return () => {
+      alive = false;
+    };
   }, [id]);
 
   const openDirections = () => {
@@ -47,7 +65,7 @@ export function LocationDetailPage() {
       <div style={{ flex: 1, background: "var(--color-bg)" }}>
         {!location ? (
           <div style={{ padding: 40, fontFamily: "Inter, sans-serif", textAlign: "center" }}>
-            <p>Đang tải thông tin địa điểm...</p>
+            <p>{notFound ? "Không tìm thấy địa điểm này." : "Đang tải thông tin địa điểm..."}</p>
             <button onClick={() => navigate("/")} style={{ border: "none", background: "none", color: "#26658C", fontWeight: 600 }}>
               ← Quay lại bản đồ
             </button>
@@ -72,7 +90,7 @@ export function LocationDetailPage() {
             {location.images[0] && (
               <div style={{ position: "relative", borderRadius: "var(--radius)", overflow: "hidden", boxShadow: "var(--shadow-card)" }}>
                 <img
-                  src={location.images[0]}
+                  src={asset(location.images[0])}
                   alt={location.name}
                   style={{ width: "100%", height: "clamp(220px, 40vw, 340px)", objectFit: "cover", display: "block" }}
                 />
@@ -146,7 +164,7 @@ export function LocationDetailPage() {
                 <section style={{ marginBottom: 20 }}>
                   <h2 style={{ fontSize: 19, marginBottom: 8 }}>Video</h2>
                   {location.videos.map((v) => (
-                    <video key={v} src={v} controls style={{ width: "100%", borderRadius: 12 }} />
+                    <video key={v} src={asset(v)} controls preload="metadata" style={{ width: "100%", borderRadius: 12 }} />
                   ))}
                 </section>
               )}

@@ -6,7 +6,7 @@ Website tra cứu di tích lịch sử, địa chỉ đỏ và nhà bia tưởng
 
 ⚠️ **Dữ liệu địa điểm (3 mục trong `locations.json`) là dữ liệu MẪU** — tên, địa chỉ, mô tả, lịch sử đều là placeholder, cần thay bằng dữ liệu thật. Ranh giới xã (`hung-long.geojson`) là **dữ liệu ranh giới hành chính thật**, lấy từ nguồn dữ liệu công khai đã cập nhật theo Nghị quyết sáp nhập 1685/NQ-UBTVQH15 (hiệu lực 01/07/2025).
 
-Logo Đoàn TNCS Hồ Chí Minh ở Header (`public/images/logo-doan-tncs-hcm.svg`) là **bản vẽ SVG gốc do Claude tự thiết kế phỏng theo huy hiệu chính thức** (vòng ngoài vàng, nền xanh lá sọc trắng, cánh tay giương cờ đỏ sao vàng) — nếu bạn có file vector chính thức, chỉ cần thay file này (giữ nguyên tên) để dùng logo chuẩn.
+Logo Đoàn TNCS Hồ Chí Minh ở Header (`public/images/logo_doan.png`) là **bản vẽ SVG gốc do Claude tự thiết kế phỏng theo huy hiệu chính thức** (vòng ngoài vàng, nền xanh lá sọc trắng, cánh tay giương cờ đỏ sao vàng) — nếu bạn có file vector chính thức, chỉ cần thay file này (giữ nguyên tên) để dùng logo chuẩn.
 
 ## Cấu trúc dự án
 
@@ -49,9 +49,21 @@ npm install
 npm run dev
 ```
 
-Mở `http://localhost:5173`. Frontend gọi Backend qua `VITE_API_BASE_URL` (mặc định `http://localhost:5000/api`, chỉnh trong file `.env` nếu cần — xem `.env.example`).
+Mở `http://localhost:5173`. Mặc định frontend dùng **dữ liệu tĩnh** (`src/data/*.json` + `public/map/hung-long.geojson`) nên chạy được ngay, không cần Backend.
 
-Nếu Backend chưa chạy, frontend sẽ tự động hiển thị **dữ liệu mẫu** kèm cảnh báo nhỏ trên bản đồ, để bạn vẫn xem được giao diện.
+Muốn chạy kèm Backend: tạo `frontend/.env` với `VITE_API_BASE_URL=http://localhost:5000/api` (xem `.env.example`). Nếu gọi API lỗi, frontend tự rơi về dữ liệu tĩnh và hiện cảnh báo nhỏ.
+
+## Deploy lên GitHub Pages
+
+1. Repo → **Settings → Pages → Source: GitHub Actions**.
+2. Push lên nhánh `main`: workflow `.github/workflows/deploy.yml` tự build (`VITE_BASE=/<tên repo>/`) và triển khai.
+3. Trang chạy tại `https://<user>.github.io/<tên repo>/` ở chế độ dữ liệu tĩnh (GitHub Pages không chạy được ASP.NET Core).
+
+Lưu ý: luôn dùng helper `asset("/images/...")` (`src/utils/asset.ts`) khi tham chiếu ảnh/video/geojson trong code để đúng đường dẫn khi deploy dưới thư mục con. Trong `locations.json` vẫn ghi `/images/ten-file.jpg` bình thường.
+
+## Bản đồ nền
+
+Không dùng CARTO (đã yêu cầu API key → hiện chữ "API KEY REQUIRED"). Nguồn nền: OpenStreetMap → Esri → OSM France (tự chuyển khi lỗi), kèm nút chuyển sang ảnh vệ tinh Esri. Cấu hình ở `components/Map/ResilientBasemap.tsx`.
 
 ## Cách bổ sung dữ liệu thật
 

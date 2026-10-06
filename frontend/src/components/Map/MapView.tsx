@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, GeoJSON, ZoomControl, useMap } from "react-leaflet";
 import type { Category, Location } from "../../types/location";
 import { createCategoryIcon } from "../Marker/CategoryMarker";
 import { LocationPopup } from "../Popup/LocationPopup";
-import { ResilientBasemap } from "./ResilientBasemap";
+import { ResilientBasemap, type BasemapMode } from "./ResilientBasemap";
 import "leaflet/dist/leaflet.css";
 
 const HUNG_LONG_CENTER: [number, number] = [10.6593, 106.6457];
@@ -118,9 +118,12 @@ function SpotlightMask({ boundary }: { boundary: GeoJSON.FeatureCollection }) {
 }
 
 export function MapView({ locations, categories, boundary }: Props) {
-  const [ready, setReady] = useState(false);
   const [basemapFailed, setBasemapFailed] = useState(false);
-  useEffect(() => setReady(true), []);
+  const [basemapMode, setBasemapMode] = useState<BasemapMode>("street");
+
+  // Callback ổn định để ResilientBasemap không bị dựng lại mỗi lần render.
+  const handleBasemapFailed = useCallback(() => setBasemapFailed(true), []);
+  const handleBasemapRecovered = useCallback(() => setBasemapFailed(false), []);
 
   const categoryById = Object.fromEntries(categories.map((c) => [c.id, c]));
 
@@ -148,6 +151,22 @@ export function MapView({ locations, categories, boundary }: Props) {
           Không tải được bản đồ nền — vui lòng kiểm tra kết nối mạng. Ranh giới và các địa điểm vẫn hiển thị bình thường.
         </div>
       )}
+      <div className="basemap-switch" role="group" aria-label="Chọn kiểu bản đồ nền">
+        <button
+          type="button"
+          className={basemapMode === "street" ? "active" : ""}
+          onClick={() => setBasemapMode("street")}
+        >
+          Bản đồ
+        </button>
+        <button
+          type="button"
+          className={basemapMode === "satellite" ? "active" : ""}
+          onClick={() => setBasemapMode("satellite")}
+        >
+          Vệ tinh
+        </button>
+      </div>
       <MapContainer
         center={HUNG_LONG_CENTER}
         zoom={13}
@@ -155,7 +174,11 @@ export function MapView({ locations, categories, boundary }: Props) {
         scrollWheelZoom
         zoomControl={false}
       >
-        <ResilientBasemap onAllProvidersFailed={() => setBasemapFailed(true)} />
+        <ResilientBasemap
+          mode={basemapMode}
+          onAllProvidersFailed={handleBasemapFailed}
+          onRecovered={handleBasemapRecovered}
+        />
 
         {boundary && <SpotlightMask boundary={boundary} />}
 
@@ -179,8 +202,7 @@ export function MapView({ locations, categories, boundary }: Props) {
 
         <ZoomControl position="bottomright" />
 
-        {ready &&
-          locations.map((loc) => (
+        {locations.map((loc) => (
             <Marker
               key={loc.id}
               position={[loc.latitude, loc.longitude]}

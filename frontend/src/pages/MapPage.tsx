@@ -4,7 +4,8 @@ import { SearchBar } from "../components/Search/SearchBar";
 import { CategoryFilter } from "../components/CategoryFilter/CategoryFilter";
 import { SiteHeader } from "../components/Layout/SiteHeader";
 import { SiteFooter } from "../components/Layout/SiteFooter";
-import { api } from "../services/api";
+import { api, API_ENABLED } from "../services/api";
+import { asset } from "../utils/asset";
 import type { Category, Location } from "../types/location";
 
 // Dữ liệu mẫu dùng khi chưa kết nối Backend (ví dụ khi chạy `npm run dev`
@@ -17,24 +18,37 @@ export function MapPage() {
   const [locations, setLocations] = useState<Location[]>(fallbackLocations as Location[]);
   const [categories, setCategories] = useState<Category[]>(fallbackCategories as Category[]);
   const [boundary, setBoundary] = useState<GeoJSON.FeatureCollection | null>(null);
-  const [usingFallback, setUsingFallback] = useState(true);
+  // Chỉ hiện cảnh báo khi ĐÃ cấu hình backend (VITE_API_BASE_URL) mà gọi lỗi.
+  const [usingFallback, setUsingFallback] = useState(false);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    // Thử tải từ Backend thật; nếu lỗi (chưa chạy Backend) thì giữ dữ liệu mẫu.
-    Promise.all([api.getLocations(), api.getCategories()])
-      .then(([locs, cats]) => {
-        setLocations(locs);
-        setCategories(cats);
-        setUsingFallback(false);
-      })
-      .catch(() => setUsingFallback(true));
+    let alive = true;
 
-    fetch("/map/hung-long.geojson")
-      .then((r) => r.json())
-      .then(setBoundary)
-      .catch(() => setBoundary(null));
+    if (API_ENABLED) {
+      // Thử tải từ Backend thật; nếu lỗi thì giữ dữ liệu tĩnh dự phòng.
+      Promise.all([api.getLocations(), api.getCategories()])
+        .then(([locs, cats]) => {
+          if (!alive) return;
+          setLocations(locs);
+          setCategories(cats);
+        })
+        .catch(() => alive && setUsingFallback(true));
+    }
+
+    // Ranh giới xã: luôn đọc file tĩnh trong public/map (đúng cả khi deploy ở /Bandoso/).
+    fetch(asset("/map/hung-long.geojson"))
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((fc) => alive && setBoundary(fc))
+      .catch(() => alive && setBoundary(null));
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const filtered = useMemo(() => {
@@ -86,7 +100,7 @@ export function MapPage() {
                 borderRadius: 8,
               }}
             >
-              Đang hiển thị dữ liệu mẫu — chưa kết nối được Backend API.
+              Không kết nối được Backend API — đang hiển thị dữ liệu dự phòng.
             </div>
           )}
         </div>

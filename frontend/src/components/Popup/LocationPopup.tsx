@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { Category, Location } from "../../types/location";
+import { asset } from "../../utils/asset";
 
 interface Props {
   location: Location;
@@ -18,7 +19,7 @@ export function LocationPopup({ location, category }: Props) {
     <div style={{ fontFamily: "Inter, sans-serif" }}>
       {location.images[0] && (
         <img
-          src={location.images[0]}
+          src={asset(location.images[0])}
           alt={location.name}
           style={{ width: "100%", height: 130, objectFit: "cover", display: "block" }}
         />
