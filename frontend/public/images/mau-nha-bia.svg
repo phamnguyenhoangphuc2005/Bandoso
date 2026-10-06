@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="533" viewBox="0 0 800 533">
+  <rect width="800" height="533" fill="#EFEDE6"/>
+  <rect x="0" y="410" width="800" height="123" fill="#C7C2B4"/>
+  <rect x="250" y="380" width="300" height="30" fill="#8A8577"/>
+  <rect x="340" y="140" width="120" height="240" fill="#D9D4C6" stroke="#6E6A5D" stroke-width="4"/>
+  <polygon points="340,140 400,90 460,140" fill="#D9D4C6" stroke="#6E6A5D" stroke-width="4"/>
+  <text x="400" y="220" font-family="Georgia, serif" font-size="20" fill="#6E6A5D" text-anchor="middle">TỔ</text>
+  <text x="400" y="250" font-family="Georgia, serif" font-size="20" fill="#6E6A5D" text-anchor="middle">QUỐC</text>
+  <text x="400" y="280" font-family="Georgia, serif" font-size="20" fill="#6E6A5D" text-anchor="middle">GHI</text>
+  <text x="400" y="310" font-family="Georgia, serif" font-size="20" fill="#6E6A5D" text-anchor="middle">CÔNG</text>
+  <text x="400" y="470" font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#5C4630" text-anchor="middle">Nhà bia tưởng niệm · Xã Hưng Long</text>
+  <text x="400" y="505" font-family="Arial" font-size="18" fill="#8A7654" text-anchor="middle">Ảnh minh họa (dữ liệu mẫu)</text>
+</svg>

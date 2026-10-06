@@ -1,0 +1,221 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --color-bg: #F6EFE4;
+  --color-surface: #FFFFFF;
+  --color-ink: #241F1B;
+  --color-ink-soft: #6B5F4F;
+  --color-red: #B8202A;
+  --color-red-dark: #8C1620;
+  --color-gold: #D9A441;
+  --color-gold-light: #F3CB4B;
+  --color-green: #2E6F4E;
+  --color-slate: #5C6670;
+  --color-border: #E4D8C0;
+  --accent-grad: linear-gradient(135deg, #B8202A 0%, #D9A441 55%, #2E6F4E 100%);
+  --accent-grad-soft: linear-gradient(135deg, rgba(184,32,42,0.12) 0%, rgba(217,164,65,0.12) 55%, rgba(46,111,78,0.12) 100%);
+  --shadow-sm: 0 2px 10px rgba(36, 31, 27, 0.08);
+  --shadow-card: 0 10px 32px rgba(36, 31, 27, 0.14);
+  --shadow-lg: 0 20px 50px rgba(36, 31, 27, 0.20);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --header-h: 64px;
+  --footer-h: 56px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .display {
+  font-family: "Playfair Display", Georgia, serif;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+img { max-width: 100%; }
+
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+::selection { background: var(--color-gold-light); color: var(--color-ink); }
+
+/* ---------- Glass surface utility ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- Site Header ---------- */
+.site-header {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 1200;
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 3px;
+  background: var(--accent-grad);
+}
+
+.site-header .logo-img {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.site-header .titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.site-header .title-main {
+  font-family: "Playfair Display", serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-header .title-sub {
+  font-size: 10.5px;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+@media (min-width: 640px) {
+  .site-header .title-main { font-size: 18px; }
+  .site-header .title-sub { font-size: 11.5px; }
+}
+
+@media (min-width: 900px) {
+  :root { --header-h: 72px; }
+  .site-header .logo-img { width: 50px; height: 50px; }
+  .site-header .title-main { font-size: 20px; white-space: normal; }
+  .site-header .title-sub { font-size: 12.5px; white-space: normal; }
+}
+
+/* ---------- Site Footer ---------- */
+.site-footer {
+  min-height: var(--footer-h);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 16px;
+  padding: 12px 16px;
+  background: #221A16;
+  color: #E8DCC8;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.site-footer a.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  color: #F3CB4B;
+  font-weight: 600;
+  font-size: 12.5px;
+  transition: background .15s ease, transform .15s ease;
+}
+.site-footer a.social-link:hover {
+  background: rgba(217,164,65,0.25);
+  transform: translateY(-1px);
+}
+.site-footer .copyright {
+  color: #C9BBA0;
+}
+
+@media (min-width: 640px) {
+  .site-footer { justify-content: space-between; padding: 12px 24px; font-size: 13px; }
+}
+
+/* ---------- Leaflet overrides ---------- */
+.leaflet-container {
+  font-family: "Inter", system-ui, sans-serif;
+  background: #DCE7DA;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  width: 260px !important;
+}
+
+.leaflet-popup-tip {
+  background: #fff;
+}
+
+.marker-pin {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+  border: 2.5px solid #fff;
+  transition: transform .15s ease;
+}
+
+.marker-pin span {
+  transform: rotate(45deg);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.leaflet-marker-icon:hover .marker-pin {
+  transform: rotate(-45deg) scale(1.12);
+}

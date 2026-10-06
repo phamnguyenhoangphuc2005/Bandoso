@@ -1,0 +1,27 @@
+[
+  {
+    "id": "1",
+    "name": "Khu Di Tích Lịch Sử Rạch Già",
+    "categoryId": "di-tich-lich-su",
+    "address": "xã Hưng Long, TP. Hồ Chí Minh",
+    "latitude": 10.692069,
+    "longitude": 106.623657,
+    "description": " Rạch Già (xưa gọi là Rạch Cầu Già) từng là căn cứ kháng chiến hiểm trở ven đô Sài Gòn, đóng vai trò là cửa ngõ giao thông thủy và hậu cần quan trọng trong hai cuộc kháng chiến. Nơi đây hiện duy trì tổ chức giỗ hội truyền thống hằng năm vào ngày 26/3 âm lịch và là điểm sinh hoạt văn hóa, giáo dục truyền thống lịch sử",
+    "history": " Rạch Già (xưa gọi là Rạch Cầu Già) từng là căn cứ kháng chiến hiểm trở ven đô Sài Gòn, đóng vai trò là cửa ngõ giao thông thủy và hậu cần quan trọng trong hai cuộc kháng chiến. Nơi đây hiện duy trì tổ chức giỗ hội truyền thống hằng năm vào ngày 26/3 âm lịch và là điểm sinh hoạt văn hóa, giáo dục truyền thống lịch sử",
+    "images": ["/images/avt_rachgia.png"],
+    "videos": []
+  },
+
+  {
+    "id": "3",
+    "name": "Nhà bia tưởng niệm Hóc Hưu",
+    "categoryId": "nha-bia-tuong-niem",
+    "address": "ấp 19, xã Hưng Long, TP. Hồ Chí Minh",
+    "latitude": 10.630221,
+    "longitude": 106.631928,
+    "description": "Vùng Hóc Hưu từng là lõm căn cứ và căn cứ lòng dân vô cùng vững chắc trong hai cuộc kháng chiến chống Pháp và chống Mỹ, đóng vai trò kết nối chiến lược giữa Sài Gòn và miền Tây",
+    "history": "Vùng Hóc Hưu từng là lõm căn cứ và căn cứ lòng dân vô cùng vững chắc trong hai cuộc kháng chiến chống Pháp và chống Mỹ, đóng vai trò kết nối chiến lược giữa Sài Gòn và miền Tây",
+    "images": ["/images/mau-nha-bia.svg"],
+    "videos": []
+  }
+]

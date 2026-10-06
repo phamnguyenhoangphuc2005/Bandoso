@@ -1,0 +1,20 @@
+[
+  {
+    "id": "di-tich-lich-su",
+    "name": "Di tích lịch sử",
+    "color": "#2E6F4E",
+    "icon": "landmark"
+  },
+  {
+    "id": "dia-chi-do",
+    "name": "Địa chỉ đỏ",
+    "color": "#B8202A",
+    "icon": "flag"
+  },
+  {
+    "id": "nha-bia-tuong-niem",
+    "name": "Nhà bia tưởng niệm",
+    "color": "#5C6670",
+    "icon": "monument"
+  }
+]

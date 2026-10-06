@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="533" viewBox="0 0 800 533">
+  <rect width="800" height="533" fill="#F6EFE4"/>
+  <rect x="0" y="400" width="800" height="133" fill="#DCC9A0"/>
+  <rect x="330" y="120" width="140" height="280" fill="#B8202A"/>
+  <polygon points="330,120 400,60 470,120" fill="#B8202A"/>
+  <circle cx="400" cy="200" r="34" fill="#F2C230"/>
+  <polygon points="400,175 407,193 426,193 411,204 417,222 400,211 383,222 389,204 374,193 393,193" fill="#B8202A"/>
+  <rect x="360" y="260" width="80" height="120" fill="#F6EFE4" stroke="#B8202A" stroke-width="4"/>
+  <text x="400" y="330" font-family="Georgia, serif" font-size="22" fill="#B8202A" text-anchor="middle">ĐỊA</text>
+  <text x="400" y="358" font-family="Georgia, serif" font-size="22" fill="#B8202A" text-anchor="middle">CHỈ ĐỎ</text>
+  <text x="400" y="470" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#5C4630" text-anchor="middle">Địa chỉ đỏ · Xã Hưng Long</text>
+  <text x="400" y="505" font-family="Arial" font-size="18" fill="#8A7654" text-anchor="middle">Ảnh minh họa (dữ liệu mẫu)</text>
+</svg>
