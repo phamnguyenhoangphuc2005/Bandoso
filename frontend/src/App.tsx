@@ -4,7 +4,7 @@ import { LocationDetailPage } from "./pages/LocationDetailPage";
 
 function App() {
   return (
-    <BrowserRouter basename="/Bandoso">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<MapPage />} />
         <Route path="/location/:id" element={<LocationDetailPage />} />

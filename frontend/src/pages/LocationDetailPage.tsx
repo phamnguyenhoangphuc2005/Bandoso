@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { api } from "../services/api";
 import type { Category, Location } from "../types/location";
 import { createCategoryIcon } from "../components/Marker/CategoryMarker";
+import { ResilientBasemap } from "../components/Map/ResilientBasemap";
 import { SiteHeader } from "../components/Layout/SiteHeader";
 import { SiteFooter } from "../components/Layout/SiteFooter";
 
@@ -47,7 +48,7 @@ export function LocationDetailPage() {
         {!location ? (
           <div style={{ padding: 40, fontFamily: "Inter, sans-serif", textAlign: "center" }}>
             <p>Đang tải thông tin địa điểm...</p>
-            <button onClick={() => navigate("/")} style={{ border: "none", background: "none", color: "#B8202A", fontWeight: 600 }}>
+            <button onClick={() => navigate("/")} style={{ border: "none", background: "none", color: "#26658C", fontWeight: 600 }}>
               ← Quay lại bản đồ
             </button>
           </div>
@@ -58,8 +59,8 @@ export function LocationDetailPage() {
               style={{
                 border: "none",
                 background: "none",
-                color: "#B8202A",
-                fontWeight: 600,
+                color: "#26658C",
+                fontWeight: 700,
                 fontSize: 14,
                 marginBottom: 16,
                 padding: 0,
@@ -86,7 +87,7 @@ export function LocationDetailPage() {
                   fontSize: 12,
                   fontWeight: 700,
                   color: "#fff",
-                  background: category?.color ?? "#B8202A",
+                  background: category?.color ?? "#26658C",
                   padding: "4px 12px",
                   borderRadius: 999,
                   marginBottom: 10,
@@ -96,7 +97,7 @@ export function LocationDetailPage() {
                 {category?.name}
               </span>
               <h1 style={{ fontSize: "clamp(24px, 4vw, 32px)", marginBottom: 8 }}>{location.name}</h1>
-              <p style={{ color: "#6B5F4F", fontSize: 15, marginBottom: 20 }}>📍 {location.address}</p>
+              <p style={{ color: "#285A78", fontSize: 15, marginBottom: 20 }}>📍 {location.address}</p>
 
               <button
                 onClick={openDirections}
@@ -125,7 +126,7 @@ export function LocationDetailPage() {
                 }}
               >
                 <h2 style={{ fontSize: 19, marginBottom: 8 }}>Mô tả</h2>
-                <p style={{ lineHeight: 1.7, color: "#3A322B", margin: 0 }}>{location.description}</p>
+                <p style={{ lineHeight: 1.7, color: "#0F2E45", margin: 0 }}>{location.description}</p>
               </section>
 
               <section
@@ -138,7 +139,7 @@ export function LocationDetailPage() {
                 }}
               >
                 <h2 style={{ fontSize: 19, marginBottom: 8 }}>Lịch sử</h2>
-                <p style={{ lineHeight: 1.7, color: "#3A322B", margin: 0 }}>{location.history}</p>
+                <p style={{ lineHeight: 1.7, color: "#0F2E45", margin: 0 }}>{location.history}</p>
               </section>
 
               {location.videos.length > 0 && (
@@ -166,10 +167,7 @@ export function LocationDetailPage() {
                     style={{ width: "100%", height: "100%" }}
                     scrollWheelZoom={false}
                   >
-                    <TileLayer
-                      attribution='&copy; OpenStreetMap contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
+                    <ResilientBasemap />
                     <Marker
                       position={[location.latitude, location.longitude]}
                       icon={createCategoryIcon(category)}

@@ -31,7 +31,8 @@ export function MapPage() {
       })
       .catch(() => setUsingFallback(true));
 
-fetch(`${import.meta.env.BASE_URL}map/hung-long.geojson`)      .then((r) => r.json())
+    fetch("/map/hung-long.geojson")
+      .then((r) => r.json())
       .then(setBoundary)
       .catch(() => setBoundary(null));
   }, []);
@@ -60,7 +61,7 @@ fetch(`${import.meta.env.BASE_URL}map/hung-long.geojson`)      .then((r) => r.js
             display: "flex",
             flexDirection: "column",
             gap: 10,
-            background: "linear-gradient(180deg, rgba(246,239,228,0.96) 0%, rgba(246,239,228,0) 100%)",
+            background: "linear-gradient(180deg, rgba(238,248,250,0.96) 0%, rgba(238,248,250,0) 100%)",
             pointerEvents: "none",
           }}
         >

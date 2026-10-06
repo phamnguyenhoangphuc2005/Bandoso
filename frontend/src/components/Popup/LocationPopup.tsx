@@ -30,7 +30,7 @@ export function LocationPopup({ location, category }: Props) {
             fontSize: 11,
             fontWeight: 600,
             color: "#fff",
-            background: category?.color ?? "#B8202A",
+            background: category?.color ?? "#26658C",
             padding: "2px 8px",
             borderRadius: 999,
             marginBottom: 6,
@@ -39,19 +39,20 @@ export function LocationPopup({ location, category }: Props) {
           {category?.name ?? "Không rõ danh mục"}
         </span>
         <h3 style={{ fontSize: 16, lineHeight: 1.3, margin: "2px 0 4px" }}>{location.name}</h3>
-        <p style={{ fontSize: 13, color: "#6B5F4F", margin: "0 0 10px" }}>{location.address}</p>
+        <p style={{ fontSize: 13, color: "#285A78", margin: "0 0 10px" }}>{location.address}</p>
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => navigate(`/location/${location.id}`)}
             style={{
               flex: 1,
-              background: "#B8202A",
+              background: "linear-gradient(135deg, #023859 0%, #26658C 60%, #54ACBF 100%)",
               color: "#fff",
               border: "none",
               borderRadius: 8,
               padding: "8px 0",
               fontSize: 13,
-              fontWeight: 600,
+              fontWeight: 700,
+              boxShadow: "0 4px 12px rgba(2,56,89,0.35)",
             }}
           >
             Xem chi tiết
@@ -61,8 +62,8 @@ export function LocationPopup({ location, category }: Props) {
             style={{
               flex: 1,
               background: "#fff",
-              color: "#B8202A",
-              border: "1.5px solid #B8202A",
+              color: "#023859",
+              border: "1.5px solid #26658C",
               borderRadius: 8,
               padding: "8px 0",
               fontSize: 13,
