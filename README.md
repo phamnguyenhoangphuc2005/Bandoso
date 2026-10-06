@@ -49,15 +49,16 @@ npm install
 npm run dev
 ```
 
-Mở `http://localhost:5173`. Mặc định frontend dùng **dữ liệu tĩnh** (`src/data/*.json` + `public/map/hung-long.geojson`) nên chạy được ngay, không cần Backend.
+Mở `http://localhost:5173/`. Khi chạy local, Vite dùng base `/`; khi deploy GitHub Pages, workflow tự đổi base thành `/<tên-repo>/`. Mặc định frontend dùng **dữ liệu tĩnh** (`src/data/*.json` + `public/map/hung-long.geojson`) nên chạy được ngay, không cần Backend.
 
 Muốn chạy kèm Backend: tạo `frontend/.env` với `VITE_API_BASE_URL=http://localhost:5000/api` (xem `.env.example`). Nếu gọi API lỗi, frontend tự rơi về dữ liệu tĩnh và hiện cảnh báo nhỏ.
 
 ## Deploy lên GitHub Pages
 
 1. Repo → **Settings → Pages → Source: GitHub Actions**.
-2. Push lên nhánh `main`: workflow `.github/workflows/deploy.yml` tự build (`VITE_BASE=/<tên repo>/`) và triển khai.
+2. Push lên nhánh `main`: workflow `.github/workflows/deploy.yml` tự build với `VITE_BASE=/<tên repo>/`, kiểm tra artifact rồi triển khai.
 3. Trang chạy tại `https://<user>.github.io/<tên repo>/` ở chế độ dữ liệu tĩnh (GitHub Pages không chạy được ASP.NET Core).
+4. Nếu vừa deploy mà trình duyệt vẫn báo 404 các file `assets/index-*.js` hoặc `assets/index-*.css`, nhấn `Ctrl + Shift + R` hoặc xoá cache/site data của domain rồi mở lại. Đây là lỗi cache CDN/trình duyệt nếu HTML cũ đang trỏ tới hash asset của một bản build đã bị thay thế.
 
 Lưu ý: luôn dùng helper `asset("/images/...")` (`src/utils/asset.ts`) khi tham chiếu ảnh/video/geojson trong code để đúng đường dẫn khi deploy dưới thư mục con. Trong `locations.json` vẫn ghi `/images/ten-file.jpg` bình thường.
 

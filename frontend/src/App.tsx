@@ -3,8 +3,10 @@ import { MapPage } from "./pages/MapPage";
 import { LocationDetailPage } from "./pages/LocationDetailPage";
 
 function App() {
+  const basename = import.meta.env.BASE_URL.replace(/\/+$/, "") || "/";
+
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<MapPage />} />
         <Route path="/location/:id" element={<LocationDetailPage />} />
