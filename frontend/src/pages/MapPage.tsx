@@ -31,8 +31,7 @@ export function MapPage() {
       })
       .catch(() => setUsingFallback(true));
 
-    fetch("/map/hung-long.geojson")
-      .then((r) => r.json())
+fetch(`${import.meta.env.BASE_URL}map/hung-long.geojson`)      .then((r) => r.json())
       .then(setBoundary)
       .catch(() => setBoundary(null));
   }, []);
